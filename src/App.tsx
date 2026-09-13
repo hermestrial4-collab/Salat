@@ -1,12 +1,13 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { AppData, PrayerName, PRAYER_NAMES, DEFAULT_STARTING, TOTAL_ORIGINAL } from './types';
+import { AppData, PrayerName, PRAYER_NAMES, ALL_TRACKERS, DEFAULT_STARTING, FASTING_STARTING, TOTAL_ORIGINAL } from './types';
 import { 
   loadData, saveData, exportData, importData, 
   getTotalCompleted, getTotalRemaining, getOverallPercent, 
   getDaysRemaining, getStreaks, getMilestonesReached,
   getTodayKey, upsertTodayPrayer, setTodayGoal, setTodayNote
 } from './utils/qadaCalculations';
+import { syncLoadFromBackend, syncSaveToBackend } from './utils/backendSync';
 import Navigation from './components/Navigation';
 import OverallProgress from './components/OverallProgress';
 import PrayerCard from './components/PrayerCard';
@@ -45,7 +46,7 @@ function DashboardPage({ data, onIncrement, onUndo, undoStates, onTodayCheck, on
 
       <DailyGoal data={data} />
 
-      <h2 className="font-bold text-lg mt-4 mb-3">Prayers</h2>
+      <h2 className="font-bold text-lg mt-4 mb-3">Prayers &amp; Fasting</h2>
       <div className="space-y-3">
         {PRAYER_NAMES.map(name => (
           <PrayerCard
@@ -56,6 +57,15 @@ function DashboardPage({ data, onIncrement, onUndo, undoStates, onTodayCheck, on
             canUndo={undoStates[name]?.length > 0}
           />
         ))}
+        <div className="border-t border-[var(--color-border)] pt-3">
+          <PrayerCard
+            key="Sawm"
+            prayer={data.prayers.Sawm}
+            onIncrement={(count) => onIncrement('Sawm', count)}
+            onUndo={() => onUndo('Sawm')}
+            canUndo={undoStates['Sawm']?.length > 0}
+          />
+        </div>
       </div>
     </div>
   );
@@ -75,6 +85,16 @@ function App() {
     return saved ? JSON.parse(saved) : {};
   });
 
+  // Try to load from backend on startup
+  useEffect(() => {
+    syncLoadFromBackend().then(backendData => {
+      if (backendData && backendData.prayers) {
+        // Backend has newer data, use it
+        setData(backendData);
+      }
+    });
+  }, []);
+
   // Apply theme
   useEffect(() => {
     document.documentElement.classList.toggle('dark', theme === 'dark');
@@ -83,6 +103,10 @@ function App() {
   // Save data on changes
   useEffect(() => {
     saveData(data);
+    // Sync to backend if available
+    syncSaveToBackend(data).then(ok => {
+      if (ok) console.log('Backend sync: OK');
+    });
     // Check milestones
     const { reached, newMessages } = getMilestonesReached(data, milestones);
     if (reached.length > milestones.length) {

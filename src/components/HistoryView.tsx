@@ -1,4 +1,4 @@
-import { AppData, PrayerName, PRAYER_NAMES, DailyRecord } from '../types';
+import { AppData, PrayerName, PRAYER_NAMES, ALL_TRACKERS, DailyRecord } from '../types';
 
 interface Props {
   data: AppData;

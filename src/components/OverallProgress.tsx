@@ -1,5 +1,5 @@
 import { AppData } from '../types';
-import { getTotalCompleted, getTotalRemaining, getTotalOriginal, getOverallPercent } from '../utils/qadaCalculations';
+import { getTotalCompleted, getTotalRemaining, getTotalOriginal, getOverallPercent, getFastingCompleted, getFastingRemaining } from '../utils/qadaCalculations';
 
 interface Props {
   data: AppData;
@@ -10,10 +10,12 @@ export default function OverallProgress({ data }: Props) {
   const totalRemaining = getTotalRemaining(data);
   const totalOriginal = getTotalOriginal(data);
   const pct = getOverallPercent(data);
+  const fastingDone = getFastingCompleted(data);
+  const fastingLeft = getFastingRemaining(data);
 
   return (
     <div className="prayer-card mb-4">
-      <h2 className="text-lg font-bold text-center mb-3">Qada Salah Progress</h2>
+      <h2 className="text-lg font-bold text-center mb-3">Qada Salah &amp; Fasting Progress</h2>
 
       <div className="grid grid-cols-3 gap-4 mb-3 text-center">
         <div>
@@ -36,6 +38,13 @@ export default function OverallProgress({ data }: Props) {
       </div>
       <div className="progress-bar">
         <div className="progress-fill" style={{ width: `${Math.min(100, pct)}%` }} />
+      </div>
+
+      <div className="mt-2 pt-2 border-t border-[var(--color-border)]">
+        <div className="flex justify-between text-sm">
+          <span>Fasting (Ṣawm)</span>
+          <span className="font-medium text-[var(--color-primary)]">{fastingDone} / {fastingDone + fastingLeft}</span>
+        </div>
       </div>
     </div>
   );

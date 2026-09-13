@@ -1,4 +1,4 @@
-export type PrayerName = 'Fajr' | 'Dhuhr' | 'Asr' | 'Maghrib' | 'Isha' | 'Witr';
+export type PrayerName = 'Fajr' | 'Dhuhr' | 'Asr' | 'Maghrib' | 'Isha' | 'Witr' | 'Sawm';
 
 export interface PrayerState {
   name: PrayerName;
@@ -8,7 +8,7 @@ export interface PrayerState {
 
 export interface DailyRecord {
   date: string; // YYYY-MM-DD
-  prayers: Record<PrayerName, number>; // how many of each completed on this day
+  prayers: Record<PrayerName, number>;
   note?: string;
   goal?: number;
 }
@@ -25,8 +25,11 @@ export interface AppSettings {
 }
 
 export const DEFAULT_STARTING = 3562;
+export const FASTING_STARTING = 360;
 export const PRAYER_NAMES: PrayerName[] = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha', 'Witr'];
+export const ALL_TRACKERS: PrayerName[] = [...PRAYER_NAMES, 'Sawm'];
 export const TOTAL_ORIGINAL = DEFAULT_STARTING * 6;
+export const TOTAL_ORIGINAL_FASTING = FASTING_STARTING;
 
 // Arabic names for display
 export const PRAYER_ARABIC: Record<PrayerName, string> = {
@@ -36,6 +39,7 @@ export const PRAYER_ARABIC: Record<PrayerName, string> = {
   Maghrib: 'المغرب',
   Isha: 'العشاء',
   Witr: 'الوتر',
+  Sawm: 'الصوم',
 };
 
 export const PRAYER_TIMES: Record<PrayerName, string> = {
@@ -45,4 +49,5 @@ export const PRAYER_TIMES: Record<PrayerName, string> = {
   Maghrib: 'Sunset',
   Isha: 'Night',
   Witr: 'Odd (after Isha)',
+  Sawm: 'Fasting (Ramadan)',
 };

@@ -1,4 +1,4 @@
-import { PrayerName, PRAYER_NAMES } from '../types';
+import { PrayerName, PRAYER_NAMES, ALL_TRACKERS } from '../types';
 import { getTodayRecord, getTodayKey } from '../utils/qadaCalculations';
 import { AppData } from '../types';
 
@@ -16,13 +16,14 @@ export default function TodayTracker({ data, onCheckPrayer, onSetGoal }: Props) 
     return today ? (today.prayers[p] || 0) > 0 : false;
   };
 
-  const totalToday = PRAYER_NAMES.reduce((s, n) => s + (today?.prayers[n] || 0), 0);
+  const totalToday = ALL_TRACKERS.reduce((s, n) => s + (today?.prayers[n] || 0), 0);
 
   return (
     <div className="prayer-card">
       <h2 className="text-lg font-bold mb-3">Today's Qada</h2>
-      
-      <div className="space-y-2 mb-4">
+
+      {/* 6 Prayers */}
+      <div className="space-y-2 mb-3">
         {PRAYER_NAMES.map(p => {
           const done = isPrayerCompleted(p);
           return (
@@ -43,11 +44,28 @@ export default function TodayTracker({ data, onCheckPrayer, onSetGoal }: Props) 
         })}
       </div>
 
+      {/* Sawm separator */}
+      <div className="border-t border-[var(--color-border)] pt-3 mb-3">
+        <div className="flex items-center gap-3 py-1">
+          <button
+            onClick={() => onCheckPrayer('Sawm')}
+            className={`w-6 h-6 rounded-full border-2 flex items-center justify-center text-sm font-bold transition-all
+              ${isPrayerCompleted('Sawm') ? 'bg-[var(--color-primary)] border-[var(--color-primary)] text-white' : 'border-[var(--color-border)] hover:border-[var(--color-primary)]'}`}
+          >
+            {isPrayerCompleted('Sawm') ? '✓' : ''}
+          </button>
+          <span className={`flex-1 ${isPrayerCompleted('Sawm') ? 'line-through text-[var(--color-text-muted)]' : 'font-medium'}`}>
+            Sawm (Fasting)
+          </span>
+          {isPrayerCompleted('Sawm') && <span className="text-xs px-2 py-0.5 rounded-full bg-[var(--color-success)]/10 text-[var(--color-success)]">Done</span>}
+        </div>
+      </div>
+
       <div className="flex items-center gap-2 mb-3">
         <div className="flex-1 progress-bar">
-          <div className="progress-fill" style={{ width: `${Math.min(100, (totalToday / PRAYER_NAMES.length) * 100)}%` }} />
+          <div className="progress-fill" style={{ width: `${Math.min(100, (totalToday / ALL_TRACKERS.length) * 100)}%` }} />
         </div>
-        <span className="text-sm font-medium">{totalToday}/{PRAYER_NAMES.length}</span>
+        <span className="text-sm font-medium">{totalToday}/{ALL_TRACKERS.length}</span>
       </div>
 
       <div className="flex flex-wrap gap-2 mb-3">
@@ -68,7 +86,7 @@ export default function TodayTracker({ data, onCheckPrayer, onSetGoal }: Props) 
         )}
       </div>
 
-      {goal > 0 && (
+      {goal && goal > 0 && (
         <div className="flex items-center gap-2">
           <div className="flex-1 progress-bar">
             <div className="progress-fill" style={{ width: `${Math.min(100, (totalToday / goal) * 100)}%` }} />

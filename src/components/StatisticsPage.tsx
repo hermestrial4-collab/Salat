@@ -1,4 +1,4 @@
-import { AppData, PrayerName, PRAYER_NAMES } from '../types';
+import { AppData, PrayerName, PRAYER_NAMES, ALL_TRACKERS } from '../types';
 import { 
   getTotalCompleted, getTotalRemaining, getOverallPercent, 
   getAveragePerDay, getStreaks, getWeeklyTotals, getMonthlyTotals,
